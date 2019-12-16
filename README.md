@@ -3,6 +3,17 @@
 - 간단한 레스토랑 예약 서비스를 구현하면서 공부 한다.
 - ~~가능하면 web / mobile 인터페이스를 구성한다.~~
 
+## 환경
+- JDK
+    - open jdk 11
+- Framework
+    - Spring Boot (2.2.x)
+- Build
+    - Gradle 6
+- Test
+    - Junit5 + AssertJ + Mokito
+    - WebMvcTest
+
 
 ## 요구 사항
 

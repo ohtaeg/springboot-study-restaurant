@@ -29,4 +29,11 @@ public class RestaurantDao implements RestaurantRepository {
                                            .orElseGet(null);
         return restaurant;
     }
+
+    @Override
+    public Restaurant save(final Restaurant restaurant) {
+        Restaurant create = new Restaurant(1234L, restaurant.getName(), restaurant.getAddress());
+        restaurants.add(create);
+        return create;
+    }
 }

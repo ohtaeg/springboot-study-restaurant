@@ -1,15 +1,22 @@
 package com.ohtaeg.study.restaurant.domain;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Restaurant {
 
-    private final long id;
-    private final String name;
-    private final String address;
+    private long id;
+    private String name;
+    private String address;
     private List<MenuItem> menuItems = new ArrayList<>();
+
+    public Restaurant() {
+    }
+
+    public Restaurant(final String name, final String address) {
+        this.name = name;
+        this.address = address;
+    }
 
     public Restaurant(final long id, final String name, final String address) {
         this.id = id;

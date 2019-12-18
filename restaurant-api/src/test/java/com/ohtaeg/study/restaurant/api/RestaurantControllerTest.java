@@ -6,24 +6,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-//@WebMvcTest(RestaurantController.class)
 class RestaurantControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
-//    @SpyBean(RestaurantDao.class)
-//    private RestaurantRepository repository;
 
     private final String URL = "/restaurant";
 
@@ -38,7 +36,7 @@ class RestaurantControllerTest {
         ;
     }
 
-    @DisplayName("가게 리스트를 조회 한다.")
+    @DisplayName("가게 리스트를 조회하는 url 호출을 성공한다.")
     @Test
     public void list() throws Exception {
         mvc.perform(get(URL))
@@ -54,16 +52,30 @@ class RestaurantControllerTest {
         ;
     }
 
-    @DisplayName("가게 상세를 조회 한다.")
+    @DisplayName("가게 상세를 조회하는 url 호출을 성공 한다.")
     @Test
     public void detail() throws Exception {
         final long id = 1004;
         final String menu = "kimchi";
         mvc.perform(get(URL + "/" + id))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.menuItems[0].name").value(menu))
-                ;
+           .andExpect(status().isOk())
+           .andExpect(content().contentType("application/json"))
+           .andExpect(jsonPath("$.id").value(id))
+           .andExpect(jsonPath("$.menuItems[0].name").value(menu))
+           .andDo(print())
+        ;
     }
+
+    @DisplayName("가게를 생성하는 url 호출이 성공 한다.")
+    @Test
+    public void create() throws Exception {
+        mvc.perform(post(URL).content("{\"name\":\"chulsu\",\"address\":\"seoul\"}")
+                             .contentType(MediaType.APPLICATION_JSON_VALUE))
+           .andExpect(status().isCreated())
+           .andExpect(header().string("location", URL + "/" + 1234L))
+           .andExpect(content().string("{}"))
+           .andDo(print())
+        ;
+    }
+
 }

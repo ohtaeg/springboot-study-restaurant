@@ -62,4 +62,16 @@ class RestaurantServiceTest {
         );
 
     }
+    @DisplayName("가게를 추가할 수 있다.")
+    @Test
+    public void addRestaurant() {
+        // given
+        final Restaurant restaurant = restaurantService.addRestaurant(new Restaurant( "chulsu", "seoul"));
+
+        // when
+        final Restaurant actual = restaurantRepository.save(restaurant);
+
+        // then
+        assertThat(actual.getId()).isEqualTo(1234L);
+    }
 }

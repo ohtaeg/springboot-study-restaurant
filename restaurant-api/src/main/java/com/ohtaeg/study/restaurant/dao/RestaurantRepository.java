@@ -1,13 +1,15 @@
 package com.ohtaeg.study.restaurant.dao;
 
 import com.ohtaeg.study.restaurant.domain.Restaurant;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface RestaurantRepository {
+public interface RestaurantRepository extends CrudRepository<Restaurant, Long> {
     List<Restaurant> findAll();
 
-    Restaurant findById(long id);
+    Optional<Restaurant> findById(long id);
 
     Restaurant save(Restaurant restaurant);
 }

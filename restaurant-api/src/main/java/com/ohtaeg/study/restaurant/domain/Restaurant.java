@@ -1,13 +1,21 @@
 package com.ohtaeg.study.restaurant.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Restaurant {
 
+    @Id
+    @GeneratedValue
     private long id;
     private String name;
     private String address;
+    @Transient
     private List<MenuItem> menuItems = new ArrayList<>();
 
     public Restaurant() {

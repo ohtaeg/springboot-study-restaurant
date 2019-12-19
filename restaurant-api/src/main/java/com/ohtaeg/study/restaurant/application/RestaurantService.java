@@ -24,7 +24,10 @@ public class RestaurantService {
     }
 
     public Restaurant getRestaurant(long id) {
-        Restaurant restaurant = restaurantRepository.findById(id);
+        //TODO null delete
+        Restaurant restaurant = restaurantRepository.findById(id)
+                                                    .orElseGet(null);
+
         List<MenuItem> menuItems = menuItemRepository.findAllByRestaurantId(id);
         restaurant.setMenuItem(menuItems);
         return restaurant;

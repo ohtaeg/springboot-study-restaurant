@@ -1,29 +1,58 @@
 package com.ohtaeg.study.restaurant.application;
 
-import com.ohtaeg.study.restaurant.dao.MenuItemDao;
 import com.ohtaeg.study.restaurant.dao.MenuItemRepository;
-import com.ohtaeg.study.restaurant.dao.RestaurantDao;
 import com.ohtaeg.study.restaurant.dao.RestaurantRepository;
 import com.ohtaeg.study.restaurant.domain.MenuItem;
 import com.ohtaeg.study.restaurant.domain.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
 
 class RestaurantServiceTest {
 
     private RestaurantService restaurantService;
-    private MenuItemRepository menuItemRepository= new MenuItemDao();
-    private RestaurantRepository restaurantRepository = new RestaurantDao();
+
+    @Mock
+    private MenuItemRepository menuItemRepository; //= new MenuItemDao();
+
+    @Mock
+    private RestaurantRepository restaurantRepository; // new RestaurantDao();
 
     @BeforeEach
+
     void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        mockRestaurantRepository();
+        mockMenuItemRepository();
+
         this.restaurantService = new RestaurantService(restaurantRepository, menuItemRepository);
+    }
+
+    private void mockRestaurantRepository() {
+        final List<Restaurant> restaurants = new ArrayList<>();
+        final Restaurant restaurant = new Restaurant(1004L, "ohtaeg", "incheon");
+        restaurants.add(restaurant);
+        restaurants.add(new Restaurant(2004L, "ohtaeg2", "seoul"));
+
+        given(restaurantRepository.findAll()).willReturn(restaurants);
+        given(restaurantRepository.findById(1004L)).willReturn(Optional.of(restaurant));
+    }
+
+    private void mockMenuItemRepository() {
+        final List<MenuItem> menuItems = new ArrayList<>();
+        menuItems.add(new MenuItem("kimchi"));
+        given(menuItemRepository.findAllByRestaurantId(1004L)).willReturn(menuItems);
     }
 
     @DisplayName("해당 모든 레스토랑을 조회 한다.")
@@ -66,7 +95,9 @@ class RestaurantServiceTest {
     @Test
     public void addRestaurant() {
         // given
-        final Restaurant restaurant = restaurantService.addRestaurant(new Restaurant( "chulsu", "seoul"));
+        final Restaurant restaurant = new Restaurant("chulsu", "seoul");
+        final Restaurant expect = new Restaurant(1234L, "chulsu", "seoul");
+        given(restaurantRepository.save(restaurant)).willReturn(expect);
 
         // when
         final Restaurant actual = restaurantRepository.save(restaurant);

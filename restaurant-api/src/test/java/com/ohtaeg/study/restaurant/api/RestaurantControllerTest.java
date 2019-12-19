@@ -1,27 +1,36 @@
 package com.ohtaeg.study.restaurant.api;
 
+import com.ohtaeg.study.restaurant.application.RestaurantService;
+import com.ohtaeg.study.restaurant.domain.MenuItem;
+import com.ohtaeg.study.restaurant.domain.Restaurant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(RestaurantController.class)
 class RestaurantControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private RestaurantService restaurantService;
 
     private final String URL = "/restaurant";
 
@@ -39,6 +48,13 @@ class RestaurantControllerTest {
     @DisplayName("가게 리스트를 조회하는 url 호출을 성공한다.")
     @Test
     public void list() throws Exception {
+        // given
+        final List<Restaurant> restaurants = new ArrayList<>();
+        restaurants.add(new Restaurant(1004L, "ohtaeg", "incheon"));
+        restaurants.add(new Restaurant(2004L, "ohtaeg2", "seoul"));
+        given(restaurantService.getRestaurants()).willReturn(restaurants);
+
+        // when then
         mvc.perform(get(URL))
            .andExpect(status().isOk())
            .andExpect(content().contentType("application/json"))
@@ -55,8 +71,15 @@ class RestaurantControllerTest {
     @DisplayName("가게 상세를 조회하는 url 호출을 성공 한다.")
     @Test
     public void detail() throws Exception {
+        // given
         final long id = 1004;
         final String menu = "kimchi";
+        final Restaurant restaurant = new Restaurant(id, "ohtaeg", "incheon");
+
+        restaurant.addMenuItem(new MenuItem(menu));
+        given(restaurantService.getRestaurant(id)).willReturn(restaurant);
+
+        // when then
         mvc.perform(get(URL + "/" + id))
            .andExpect(status().isOk())
            .andExpect(content().contentType("application/json"))
@@ -72,7 +95,7 @@ class RestaurantControllerTest {
         mvc.perform(post(URL).content("{\"name\":\"chulsu\",\"address\":\"seoul\"}")
                              .contentType(MediaType.APPLICATION_JSON_VALUE))
            .andExpect(status().isCreated())
-           .andExpect(header().string("location", URL + "/" + 1234L))
+           .andExpect(header().string("location", URL + "/" + 0))
            .andExpect(content().string("{}"))
            .andDo(print())
         ;
